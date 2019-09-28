@@ -295,7 +295,16 @@ function displayGameInfo(text) {
 // if they don't have the color, they can play everything
 function playCard(cardsOnTable, playerSet, currentPlayer, roundWinner) {
   let cards = cardsOnTable;
-  let infoText;
+  let infoText = 'your cards are: ';
+  // console.log(JSON.parse(JSON.stringify(playerSet)));
+  if (currentPlayer === 3) {
+    playerSet.forEach((item, index) => {
+      infoText += index + ': ' + item.color + ' ' + item.name + ', ';
+    });
+    displayGameInfo(infoText);
+    //var person = prompt('which card do you want to play?');
+  }
+
   if (typeof cardsOnTable === 'undefined') {
     // put random card from first player on the table
     const firstCard = playerSet.splice(Math.floor(Math.random() * playerSet.length), 1)[0];

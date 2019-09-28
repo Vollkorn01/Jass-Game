@@ -1,3 +1,4 @@
+/* eslint-disable prefer-template */
 // Jass Algorithm
 
 // shuffle and give out cards
@@ -279,36 +280,47 @@ function createSet() {
   return playerSets;
 }
 
+function displayGameInfo(text) {
+  const textInput = text;
+  const para = document.createElement('p');
+  const node = document.createTextNode(textInput);
+  para.appendChild(node);
+  const element = document.getElementById('gameInfo');
+  element.appendChild(para);
+}
+
 // whichCard
 // first player can randomly play a card
 // other players have to play the same color (if they have it) or a trump
 // if they don't have the color, they can play everything
 function playCard(cardsOnTable, playerSet, currentPlayer, roundWinner) {
   let cards = cardsOnTable;
+  let infoText;
   if (typeof cardsOnTable === 'undefined') {
-    // select random card from hand of first player to start game
-    // and put it "on the table"
+    // put random card from first player on the table
     const firstCard = playerSet.splice(Math.floor(Math.random() * playerSet.length), 1)[0];
     cards = [0, 0, 0, 0];
     cards[currentPlayer] = firstCard;
+    infoText = 'player 1 plays ' + firstCard.color + ' ' + firstCard.name;
+    displayGameInfo(infoText);
   } else {
     // loop through players card deck to see if he has the right color
     for (let i = 0; i < playerSet.length; i += 1) {
       cards = cardsOnTable;
       // play only if this players card color is the same than the color of the first card
-      console.log('roundWinnerColor: ', cards[roundWinner].color);
-      console.log('playerColor: ', playerSet[i].color);
       if (cards[roundWinner].color === playerSet[i].color) {
-        console.log('same color');
         const selectedCard = playerSet.splice(i, 1)[0];
         cards[currentPlayer] = selectedCard;
-        console.log('selected Card: ', selectedCard);
+        infoText = 'player ' + (currentPlayer + 1) + ' plays ' + selectedCard.color + ' ' + selectedCard.name;
+        displayGameInfo(infoText);
         break;
       }
       // if player doesn't have the same color play a random card
       if (i === playerSet.length - 1) {
         const randomCard = playerSet.splice(Math.floor(Math.random() * playerSet.length), 1)[0];
         cards[currentPlayer] = randomCard;
+        infoText = 'player ' + (currentPlayer + 1) + ' plays ' + randomCard.color + ' ' + randomCard.name;
+        displayGameInfo(infoText);
         break;
       }
     }
@@ -352,23 +364,6 @@ function whoStartsNext(playerNo) {
   return order;
 }
 
-// roundWinner
-// compare 4 cards
-// the card with the highest value who is trump wins,
-// except if it is the trump of "Under" or the "9", which are best resp. second best
-// add score to the players score
-// this player starts the next round
-
-// game winner
-// add player 1 and 2 scores together, highest score wins
-
-// play function
-// shuffle
-// choose a trump
-// for 9 rounds:
-// for each player play a card (put it in the roundList) and delete it from his own list
-// call roundWinner at end of for loop
-// call game winner
 function play() {
   const sets = createSet();
   const trumps = ['Schellen', 'Schilten', 'Eicheln', 'Rosen'];
@@ -381,16 +376,11 @@ function play() {
 
   // game goes for 9 rounds
   for (let rounds = 0; rounds < 9; rounds += 1) {
-    console.log('sets: ', JSON.parse(JSON.stringify(sets)));
-
     // there are 4 players who play after each other
     for (let i = 0; i < 4; i += 1) {
       const currentPlayer = order[i];
-      // console.log('currentPlayer', currentPlayer);
       [cardsOnTable, set] = playCard(cardsOnTable, sets[currentPlayer], currentPlayer, roundWinner);
-      console.log('cardsOnTable end loop: ', JSON.parse(JSON.stringify(cardsOnTable)));
       sets[currentPlayer] = set;
-      cardsOnTable = 'undefined';
     }
 
     // determine round winner
@@ -402,18 +392,17 @@ function play() {
 
     // calculate points
     playerScores[roundWinner] += roundScore;
-    console.log('cardsontable: ', cardsOnTable);
-    console.log('round winner: ', roundWinner);
-    console.log('playerScores: ', playerScores);
-
+    let infoText = 'player ' + (roundWinner + 1) + ' wins';
+    displayGameInfo(infoText);
+    infoText = 'scores: ' + playerScores.join(', ');
+    displayGameInfo(infoText);
     // who starts next? order is new squence
     order = whoStartsNext(roundWinner);
-    console.log(`Player ${order[0]} starts`);
   }
   const pointsOfWinner = Math.max(...playerScores);
   const overallWinner = playerScores.indexOf(pointsOfWinner);
-  console.log('points: ', pointsOfWinner);
-  console.log('overallwinner: player ', overallWinner + 1);
+  const text = 'player ' + (overallWinner + 1) + ' wins game with ' + pointsOfWinner + ' points';
+  displayGameInfo(text);
 }
 
 play();

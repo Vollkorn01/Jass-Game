@@ -276,7 +276,7 @@ function createSet() {
   const setPlayer3 = set.splice(0, 9);
   const setPlayer4 = set.splice(0, 9);
 
-  const playerSets = [setPlayer1, setPlayer2, setPlayer3, setPlayer4]
+  const playerSets = [setPlayer1, setPlayer2, setPlayer3, setPlayer4];
   return playerSets;
 }
 
@@ -300,9 +300,15 @@ function playCard(cardsOnTable, playerSet, currentPlayer, roundWinner) {
   if (currentPlayer === 3) {
     playerSet.forEach((item, index) => {
       infoText += index + ': ' + item.color + ' ' + item.name + ', ';
+      const btn = document.createElement('BUTTON');
+      btn.innerHTML = index;
+      document.body.appendChild(btn);
     });
-    displayGameInfo(infoText);
-    //var person = prompt('which card do you want to play?');
+    // const card = prompt('which card do you want to play?'); // TODO: ask player which card he wants to play
+    // if (card != null) {
+    //   infoText = 'you chose card no. ' + card;
+    //   displayGameInfo(infoText);
+    // }
   }
 
   if (typeof cardsOnTable === 'undefined') {
@@ -413,5 +419,3 @@ function play() {
   const text = 'player ' + (overallWinner + 1) + ' wins game with ' + pointsOfWinner + ' points';
   displayGameInfo(text);
 }
-
-play();
